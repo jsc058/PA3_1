@@ -16,30 +16,12 @@
 
 using namespace std;
 
-// Actor node structure
-struct ActorNode {
-  string actor;
-  vector<MovieNode *> movies_list;
-}
-
-struct MovieNode {
-  string movie;
-  vector<ActorNode *> actors_list;
-}
-
-// Method to create ActorNode
-struct ActorNode* newActNode(string name) {
-        struct ActorNode* newActor = (struct ActorNode*) malloc(sizeof(struct ActorNode));
-        newActor->actor = name;
-
-}
-
 ActorGraph::ActorGraph(void) {
   // Vector of actors paired with an array of pointers to their movies
-  vector<ActorNode> Actors;
+  vector<ActorNode> actors;
 
   // Vector of movies
-  vector<MovieNode> Movies;
+  vector<MovieNode> movies;
 }
 
 bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) {
