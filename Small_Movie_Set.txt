@@ -1,0 +1,6 @@
+Actor/Actress   Movie   Year
+Kevin Bacon     X-Men: First Class      2011
+James MaCavoy   X-Men: First Class      2011
+Jennifer Lawrence       X-Men: First Class      2011
+Jennifer Lawrence       Hunger Games    2012
+Josh Hutcherson       Hunger Games    2012
