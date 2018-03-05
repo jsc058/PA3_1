@@ -82,7 +82,8 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
         string movie_title(record[1]);
         int movie_year = stoi(record[2]);
 
-        // we have an actor/movie relationship, now what?
+        // Add actor and movies to their respective vectors
+        
     }
 
     if (!infile.eof()) {
