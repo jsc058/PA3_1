@@ -10,5 +10,11 @@ class MovieNode {
   public:
 
     // Fields
-    vector<ActorNode *> movies_list;
+    vector<ActorNode*> actors_list;
+    string movie_name;
+
+    MovieNode(string * name) {
+        movie_name = *name;
+        //actors_list.push_back(actor);
+    }
 }

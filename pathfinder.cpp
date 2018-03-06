@@ -16,4 +16,16 @@
 
 using namespace std;
 
-void pathfinder(const char* in_filename, char edges, )
+int run(int argc, const char ** argv) {
+        if (argc < 4) {
+                cout << "Incorrect number of arguments." << endl;
+                exit(-1);
+        }
+
+        // Make the graph with the movie cast list
+        ActorGraph ag(argv[0], argv[1]);
+        cout << "Number of nodes: " + ag.totalVertices << endl;
+        cout << "Number of edges:" + ag.totalEdges << endl;
+
+
+}

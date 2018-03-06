@@ -12,21 +12,41 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <utility>
 #include "ActorGraph.hpp"
+#include "ActorNode.hpp"
+#include "MovieNode.hpp"
 
 using namespace std;
 
-ActorGraph::ActorGraph(void) {
-  // Vector of actors paired with an array of pointers to their movies
-  vector<ActorNode> actors;
 
-  // Vector of movies
-  vector<MovieNode> movies;
+
+// Vector of actors paired with an array of pointers to their movies
+//vector<pair<string,ActorNode>> actors;
+
+// Vector of movies
+//vector<pair<string,MovieNode>> movies;
+
+ActorGraph::ActorGraph(const char in_filename, const char type) {
+        bool use_weighted_edges;
+
+        if (type == 'u') {
+                use_weighted_edges = false;
+        } else {
+                use_weighted_edges = true;
+        }
+
+        bool success = loadFromFile(&in_filename, use_weighted_edges);
 }
 
 bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) {
     // Initialize the file stream
     ifstream infile(in_filename);
+
+    // Node to insert into the vectors
+    ActorNode * actor;
+    MovieNode * movie;
 
     bool have_header = false;
 
@@ -65,7 +85,40 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
         int movie_year = stoi(record[2]);
 
         // Add actor and movies to their respective vectors
-        
+
+        // Check if the actor already exist
+        auto it1 = actors.find(actor_name);
+        //auto itA = find(actors.begin(), actors.end(), actor_name)
+
+        // Check if the movie exists
+        auto it2 = movies.find(movie_title);
+
+
+        // If the actor and movie hasn't exist yet, insert into hash map
+        if (it1 == actors.end() && it2 == movies.end()) {
+                actors.insert({actor_name, new ActorNode(&actor_name)});
+                movies.insert({movie_title, new MovieNode(*movie_title)});
+
+                totalVertices++;
+                totalEdges++;
+
+                //actors.insert({actor_name, vector<string>()});
+
+        // If only the actor hasn't existed yet
+        } else if (it1 == actors.end()) {
+                actors.insert({actor_name, new ActorNode(&actor_name)});
+                totalVertices++;
+
+        // If only the movie hasn't existed yet
+        } else if (it2 == movies.end()) {
+                movies.insert({movie_title, new MovieNode(&movie_title)});
+                totalEdges++;
+        }
+
+        it1->second.movies_list.push_back(it2->second);
+        it2->second.actors_list.push_back(it1->second);
+
+
     }
 
     if (!infile.eof()) {

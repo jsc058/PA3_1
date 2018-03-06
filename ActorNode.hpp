@@ -11,5 +11,11 @@ class ActorNode {
 
     // Fields
     vector<MovieNode *> movies_list;
+    string actor_name;
+
+    ActorNode(string & name) {
+        actor_name = *name;
+        //movies_list.push_back(movie);
+    }
 
 }

@@ -20,7 +20,11 @@ all: pathfinder linkpredictor awardsceremony
 
 # include what ever source code *.hpp files pathfinder relies on (these are merely the ones that were used in the solution)
 
-pathfinder: ActorGraph.o
+pathfinder: pathfinder.o ActorGraph.o
+	$(CC) $(LDFLAGS) - o pathfinder pathfinder.o ActorGraph.hpp
+
+pathfinder.o: pathfinder.cpp
+	$(CC) $(CXXFLAGS) -c pathfinder.cpp
 
 
 
@@ -33,4 +37,3 @@ ActorGraph.o: ActorGraph.hpp
 
 clean:
 	rm -f pathfinder *.o core*
-
