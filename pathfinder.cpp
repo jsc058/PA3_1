@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 #include "ActorGraph.hpp"
+#include "ActorNode.hpp"
+#include "MovieNode.hpp"
 
 using namespace std;
 
