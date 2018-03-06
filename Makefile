@@ -21,7 +21,7 @@ all: pathfinder linkpredictor awardsceremony
 # include what ever source code *.hpp files pathfinder relies on (these are merely the ones that were used in the solution)
 
 pathfinder: pathfinder.o ActorGraph.o
-	$(CC) $(LDFLAGS) - o pathfinder pathfinder.o ActorGraph.hpp
+	$(CC) $(LDFLAGS) - o pathfinder pathfinder.o ActorGraph.hpp 
 
 pathfinder.o: pathfinder.cpp
 	$(CC) $(CXXFLAGS) -c pathfinder.cpp
@@ -33,7 +33,6 @@ pathfinder.o: pathfinder.cpp
 # Note: you do not have to include a *.cpp file if it aleady has a paired *.hpp file that is already included with class/method headers
 
 ActorGraph.o: ActorGraph.hpp
-	$(CC) $(CXXFLAGS) -c ActorGraph.hpp
-
+	$(CC) $(CXXFLAGS) -c ActorGraph.hpp 
 clean:
 	rm -f pathfinder *.o core*
