@@ -15,6 +15,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <unordered_map>
 #include "ActorGraph.hpp"
 #include "ActorNode.hpp"
 #include "MovieNode.hpp"

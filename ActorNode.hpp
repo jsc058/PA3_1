@@ -3,6 +3,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include "MovieNode.hpp"
+
 using namespace std;
 
 class ActorNode {
@@ -13,7 +15,7 @@ class ActorNode {
     vector<MovieNode *> movies_list;
     string actor_name;
 
-    ActorNode(string & name) {
+    ActorNode(string * name) {
         actor_name = *name;
         //movies_list.push_back(movie);
     }

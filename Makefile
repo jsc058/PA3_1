@@ -33,7 +33,7 @@ pathfinder.o: pathfinder.cpp
 # Note: you do not have to include a *.cpp file if it aleady has a paired *.hpp file that is already included with class/method headers
 
 ActorGraph.o: ActorGraph.hpp
-
+	$(CC) $(CXXFLAGS) -c ActorGraph.hpp
 
 clean:
 	rm -f pathfinder *.o core*
