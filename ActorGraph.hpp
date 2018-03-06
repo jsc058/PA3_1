@@ -11,6 +11,7 @@
 #define ACTORGRAPH_HPP
 
 #include <iostream>
+#include <unordered_map>
 
 // Maybe include some data structures here
 
@@ -19,13 +20,16 @@ using namespace std;
 class ActorGraph {
 protected:
 
+
+
+public:
     // Maybe add class data structure(s) here
     unordered_map<string, vector<MovieNode*>> actors;
     unordered_map<string, vector<ActorNode*>> movies;
     int totalVertices;
     int totalEdges;
+    int totalMovies;
 
-public:
     ActorGraph(const char in_filename, const char type);
 
     // Maybe add some more methods here

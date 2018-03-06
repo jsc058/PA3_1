@@ -24,8 +24,10 @@ int run(int argc, const char ** argv) {
 
         // Make the graph with the movie cast list
         ActorGraph ag(argv[0], argv[1]);
-        cout << "Number of nodes: " + ag.totalVertices << endl;
-        cout << "Number of edges:" + ag.totalEdges << endl;
+        cout << "# nodes: " + ag.totalVertices << endl;
+        cout << "# movies: " + ag.totalMovies << endl;
+        cout << "# edges:" + ag.totalEdges << endl;
+
 
 
 }

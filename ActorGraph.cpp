@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <cstream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -28,16 +29,16 @@ using namespace std;
 // Vector of movies
 //vector<pair<string,MovieNode>> movies;
 
-ActorGraph::ActorGraph(const char in_filename, const char type) {
+ActorGraph::ActorGraph(const string in_filename, const char * type) {
         bool use_weighted_edges;
 
-        if (type == 'u') {
+        if (*(type) == 'u') {
                 use_weighted_edges = false;
         } else {
                 use_weighted_edges = true;
         }
 
-        bool success = loadFromFile(&in_filename, use_weighted_edges);
+        bool success = loadFromFile(in_filename.c_str(), use_weighted_edges);
 }
 
 bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) {
@@ -100,6 +101,7 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
                 movies.insert({movie_title, new MovieNode(*movie_title)});
 
                 totalVertices++;
+                totalMovies++;
                 totalEdges++;
 
                 //actors.insert({actor_name, vector<string>()});
@@ -108,10 +110,12 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
         } else if (it1 == actors.end()) {
                 actors.insert({actor_name, new ActorNode(&actor_name)});
                 totalVertices++;
+                totalEdges++;
 
         // If only the movie hasn't existed yet
         } else if (it2 == movies.end()) {
                 movies.insert({movie_title, new MovieNode(&movie_title)});
+                totalMovies++;
                 totalEdges++;
         }
 
