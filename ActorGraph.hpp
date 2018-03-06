@@ -13,7 +13,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <cstream>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <algorithm>

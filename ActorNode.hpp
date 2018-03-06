@@ -18,4 +18,6 @@ class ActorNode {
         //movies_list.push_back(movie);
     }
 
-}
+};
+
+#endif
