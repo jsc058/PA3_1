@@ -10,18 +10,16 @@
 #ifndef ACTORGRAPH_HPP
 #define ACTORGRAPH_HPP
 
+#include "MovieNode.hpp"
+#include "ActorNode.hpp"
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <cstring>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <utility>
 #include <unordered_map>
-#include "ActorGraph.hpp"
-#include "ActorNode.hpp"
-#include "MovieNode.hpp"
 
 // Maybe include some data structures here
 
@@ -53,7 +51,7 @@ public:
      *
      * return true if file was loaded sucessfully, false otherwise
      */
-    pair<int, int> loadFromFile(const char* in_filename, bool use_weighted_edges);
+    bool loadFromFile(const char* in_filename, bool use_weighted_edges);
 
 };
 
