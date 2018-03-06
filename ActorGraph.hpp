@@ -10,8 +10,17 @@
 #ifndef ACTORGRAPH_HPP
 #define ACTORGRAPH_HPP
 
+#include <fstream>
 #include <iostream>
-#include <unordered_map>
+#include <sstream>
+#include <cstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <utility>
+#include "ActorGraph.hpp"
+#include "ActorNode.hpp"
+#include "MovieNode.hpp"
 
 // Maybe include some data structures here
 
@@ -30,7 +39,7 @@ public:
     int totalEdges;
     int totalMovies;
 
-    ActorGraph(const char in_filename, const char type);
+    ActorGraph(const string in_filename, const char * type) ;
 
     // Maybe add some more methods here
 
