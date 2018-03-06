@@ -1,7 +1,7 @@
 /*
  * ActorGraph.hpp
- * Author: <YOUR NAME HERE>
- * Date:   <DATE HERE>
+ * Author: Jennifer Chan
+ * Date:   March 5, 2018
  *
  * This file is meant to exist as a container for starter code that you can use to read the input file format
  * defined in movie_casts.tsv. Feel free to modify any/all aspects as you wish.
@@ -13,6 +13,7 @@
 #include "MovieNode.hpp"
 #include "ActorNode.hpp"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -32,8 +33,8 @@ protected:
 
 public:
     // Maybe add class data structure(s) here
-    unordered_map<string, vector<MovieNode*>> actors;
-    unordered_map<string, vector<ActorNode*>> movies;
+    unordered_map<string, ActorNode> actors;
+    unordered_map<string, MovieNode> movies;
     int totalVertices;
     int totalEdges;
     int totalMovies;
@@ -53,6 +54,11 @@ public:
      */
     bool loadFromFile(const char* in_filename, bool use_weighted_edges);
 
+    // Function for unweighted graphs
+    bool UnweightedPath(string actor1, string actor2, const string in_filename);
+
+    // Function for weighted graphs
+    bool WeightedPath(string actor1, string actor2, const string in_filename);
 };
 
 

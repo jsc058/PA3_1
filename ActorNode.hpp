@@ -3,10 +3,12 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <limits.h>
 #include "MovieNode.hpp"
+# define INF 0x3f3f3f3f
 
 using namespace std;
-
+//numeric_limits<double>::infinity()
 class ActorNode {
 
   public:
@@ -14,10 +16,16 @@ class ActorNode {
     // Fields
     vector<MovieNode *> movies_list;
     string actor_name;
+    int dist;
+    ActorNode* prev;
+    pair<string, int> prevEdge;
+    bool done;
 
     ActorNode(string * name) {
         actor_name = *name;
-        //movies_list.push_back(movie);
+        dist = INF;
+        prev = nullptr;
+        done = false;
     }
 
 };
