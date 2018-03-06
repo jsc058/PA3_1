@@ -13,11 +13,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <cstream>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <unordered_map>
 #include "ActorGraph.hpp"
 #include "ActorNode.hpp"
 #include "MovieNode.hpp"
