@@ -31,10 +31,10 @@ int main(int argc, const char ** argv) {
         // Initialize the file stream
         ifstream infile(argv[3]);
         bool have_header = false;
-        
+
 	while (infile) {
 		string s;
-		
+
 		// get the next line
 		if (!getline( infile, s )) break;
 
@@ -72,10 +72,6 @@ int main(int argc, const char ** argv) {
 			success = ag.WeightedPath(actor1, actor2, argv[4]);
 			cout << actor1 + actor2 << endl;
 
-		}
-
-		if (success == false) {
-			exit(-1);
 		}
 
 		auto it = ag.actors.begin();
