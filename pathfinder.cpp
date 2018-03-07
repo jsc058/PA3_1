@@ -27,11 +27,17 @@ int main(int argc, const char ** argv) {
 
         // Make the graph with the movie cast list
         ActorGraph ag(argv[1], argv[2]);
+	cout << ag.totalNodes << endl;
+	cout << ag.totalMovies << endl;
 
         // Initialize the file stream
         ifstream infile(argv[3]);
         bool have_header = false;
-        
+        ofstream myfile(argv[4]);
+	ofstream & myfile_ref = myfile;
+	if (myfile.is_open()) {
+		myfile_ref << "(actor)--[movie#@year]-->(actor)--...\n";
+	}
 	while (infile) {
 		string s;
 		
@@ -66,16 +72,12 @@ int main(int argc, const char ** argv) {
 		bool success;
 
 		if (strcmp(argv[2],"u") == 0) {
-			success = ag.UnweightedPath(actor1, actor2, argv[4]);
+			success = ag.UnweightedPath(actor1, actor2, myfile_ref);
 
 		} else {
-			success = ag.WeightedPath(actor1, actor2, argv[4]);
+			success = ag.WeightedPath(actor1, actor2, myfile_ref);
 			cout << actor1 + actor2 << endl;
 
-		}
-
-		if (success == false) {
-			exit(-1);
 		}
 
 		auto it = ag.actors.begin();
@@ -85,6 +87,11 @@ int main(int argc, const char ** argv) {
 			it->second.done = false;
 		}
 	}
+	
+
+	myfile.close(); 
+	return 0;
+		
 
 
 };

@@ -7,11 +7,11 @@ LDFLAGS=
 # if passed "type=opt" at command-line, compile with "-O3" flag (otherwise use "-g" for debugging)
 
 ifeq ($(type),opt)
-    CPPFLAGS += -O3
-    LDFLAGS += -O3
-else
     CPPFLAGS += -g
     LDFLAGS += -g
+else
+    CPPFLAGS += -O3
+    LDFLAGS += -O3
 endif
 
 all: pathfinder linkpredictor awardsceremony

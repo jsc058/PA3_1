@@ -46,6 +46,8 @@ public:
     // Maybe add class data structure(s) here
     unordered_map<string, ActorNode> actors;
     unordered_map<string, MovieNode> movies;
+    int totalNodes;
+    int totalMovies;
 
     //ActorGraph(const string in_filename, const char * type) ;
 
@@ -78,6 +80,9 @@ public:
 		} else {
 			use_weighted_edges = true;
 		}
+
+		totalNodes = 0;
+		totalMovies = 0;
 
 		bool success = loadFromFile(in_filename, use_weighted_edges);
 	}
@@ -130,24 +135,31 @@ public:
 		auto it1 = actors.find(actor_name);
 
 		// Check if the movie exists
-		auto it2 = movies.find(movie_title);
+		auto it2 = movies.find(movie_title + record[2]);
 
 		// If the actor and movie hasn't exist yet, insert into hash map
 		if (it1 == actors.end() && it2 == movies.end()) {
 			actors.insert({actor_name, ActorNode(&actor_name)});
-			movies.insert({movie_title, MovieNode(&movie_title, movie_year, use_weighted_edges)});
+			movies.insert({movie_title + record[2], MovieNode(&movie_title, movie_year, use_weighted_edges)});
+			it1 = actors.find(actor_name);
+			it2 = movies.find(movie_title + record[2]);
+			totalNodes++;
+			totalMovies++;
 
 		// If only the actor hasn't existed yet
 		} else if (it1 == actors.end()) {
 			actors.insert({actor_name, ActorNode(&actor_name)});
+			it1 = actors.find(actor_name);
+			totalNodes++;
 
 		// If only the movie hasn't existed yet
 		} else if (it2 == movies.end()) {
-			movies.insert({movie_title, MovieNode(&movie_title, movie_year, use_weighted_edges)});
-		}
+			movies.insert({movie_title + record[2], MovieNode(&movie_title, movie_year, use_weighted_edges)});
+			it2 = movies.find(movie_title + record[2]);
+			totalMovies++;
 
-		it1 = actors.find(actor_name);
-		it2 = movies.find(movie_title);
+		} 
+
 		it1->second.movies_list.push_back(&(it2->second));
 		it2->second.actors_list.push_back(&(it1->second));
 
@@ -163,7 +175,7 @@ public:
 	    return true;
 	}
 
-	bool UnweightedPath(string actor1, string actor2, const string in_filename) {
+	bool UnweightedPath(string actor1, string actor2, ofstream& myfile) {
 	    queue<ActorNode*> toExplore;
 	    ActorNode* start;
             string * path;
@@ -200,19 +212,19 @@ public:
 				ActorNode* neighbor = *itA;
 				// once reach actor2, print path
 				if (neighbor->actor_name == actor2) {
-					ofstream myfile(in_filename, ofstream::app);
-					if (myfile.is_open()) {
+					//ofstream myfile(in_filename, ofstream::app);
+					//if (myfile.is_open()) {
 						//print_to_output(next, path);
-						ofstream & myfile_ref = myfile;
-						print_to_output(next, myfile_ref);
+						//ofstream & myfile_ref = myfile;
+						print_to_output(next, myfile);
 						myfile << "[" + (*itV)->movie_name + "#@" + to_string((*itV)->movie_year) + "]";
 						myfile << "-->(" + neighbor->actor_name + ")\n";
 						myfile.close();
 						return true;
-					} else {
-						cout << "Unable to open file" << endl;
+					//} else {
+					//	cout << "Unable to open file" << endl;
 						return false;
-					}
+					//}
 				}
 				if (neighbor->dist == INT_MAX) {
 					neighbor->dist = next->dist+1;
@@ -228,10 +240,9 @@ public:
 	    return false;
 	}
 
-	bool WeightedPath(string actor1, string actor2, const string in_filename) {
+	bool WeightedPath(string actor1, string actor2, ofstream& myfile) {
 	    priority_queue<pair<int,ActorNode*>, vector<pair<int,ActorNode*>>, myComparator> toExplore;
 	    ActorNode* start;
-	    string * path;
 
 	    auto it1 = actors.find(actor1);
 	    auto it2 = actors.find(actor2);
@@ -248,6 +259,7 @@ public:
 
 	    start = &(it1->second);
 	    start->dist = 0;
+
 	    // vector of distances Initialize to 0
 	    toExplore.push(make_pair(0,start));
 
@@ -286,17 +298,18 @@ public:
 	    }
 
 	    if (it2->second.dist != INT_MAX) {
-		    ofstream myfile(in_filename,ofstream::app);
-		    if (myfile.is_open()) {
-			    ofstream & myfile_ref = myfile;
-			    print_to_output(it2->second.prev, myfile_ref);
+		    //ofstream myfile(in_filename,ofstream::app);
+		    //if (myfile.is_open()) {
+			    //ofstream & myfile_ref = myfile;
+			    print_to_output(it2->second.prev, myfile);
+			    myfile << "[" + it2->second.prevEdge.first + "#@" + to_string(it2->second.prevEdge.second) + "]";
 			    myfile << "-->(" + it2->second.actor_name + ")\n";
-			    myfile.close();
+			    //myfile.close();
 			    return true;
-		    } else {
-			    cout << "Unable to open file" << endl;
-			    return false;
-		    }
+		    //} else {
+		//	    cout << "Unable to open file" << endl;
+		//	    return false;
+		  //  }
 
 	    } else {
 		return false;
@@ -307,19 +320,12 @@ public:
 
 		if (actor->prev == nullptr) {
 			myfile << "(" + actor->actor_name + ")--";
-			//*path += "(" + actor->actor_name + ")"; 
-			//return path;
 		} else {
 
-			//ActorNode * prev = actor->prev;
-			//print_to_output(actor->prev, path);
 			print_to_output(actor->prev, myfile);
 
 			myfile << "[" + actor->prevEdge.first + "#@" + to_string(actor->prevEdge.second) + "]-->";
-			//*path += "--[" + actor->prevEdge.first + "#@" + to_string(actor->prevEdge.second) + "]";
-			//*path += "(" + actor->actor_name + ")"; 
 			myfile << "(" + actor->actor_name + ")--"; 
-			//return path;
 		}
 
 
