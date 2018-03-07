@@ -14,26 +14,22 @@
 #include <vector>
 #include "ActorGraph.hpp"
 #include <limits.h>
-# define INF 0x3f3f3f3f
 
 using namespace std;
 
 
 
 int main(int argc, const char ** argv) {
-        if (argc < 4) {
+        if (argc < 5) {
                 cout << "Incorrect number of arguments." << endl;
                 exit(-1);
         }
 
         // Make the graph with the movie cast list
-        ActorGraph ag(argv[0], argv[1]);
-        cout << "# nodes: " + ag.totalVertices << endl;
-        cout << "# movies: " + ag.totalMovies << endl;
-        cout << "# edges:" + ag.totalEdges << endl;
+        ActorGraph ag(argv[1], argv[2]);
 
         // Initialize the file stream
-        ifstream infile(argv[2]);
+        ifstream infile(argv[3]);
         bool have_header = false;
         
 	while (infile) {
@@ -69,11 +65,12 @@ int main(int argc, const char ** argv) {
 		string actor2(record[1]);
 		bool success;
 
-		if (strcmp(argv[1],"u")) {
-			success = ag.UnweightedPath(actor1, actor2, argv[3]);
+		if (strcmp(argv[2],"u") == 0) {
+			success = ag.UnweightedPath(actor1, actor2, argv[4]);
 
 		} else {
-			success = ag.WeightedPath(actor1, actor2, argv[3]);
+			success = ag.WeightedPath(actor1, actor2, argv[4]);
+			cout << actor1 + actor2 << endl;
 
 		}
 
@@ -83,7 +80,7 @@ int main(int argc, const char ** argv) {
 
 		auto it = ag.actors.begin();
 		for(; it != ag.actors.end(); ++it ) {
-			it->second.dist = INF;
+			it->second.dist = INT_MAX;
 			it->second.prev = nullptr;
 			it->second.done = false;
 		}

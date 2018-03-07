@@ -6,7 +6,6 @@
 #include <vector>
 #include <limits.h>
 #include "MovieNode.hpp"
-# define INF 0x3f3f3f3f
 
 using namespace std;
 
@@ -26,7 +25,7 @@ class ActorNode {
 
     ActorNode(string * name) {
         actor_name = *name;
-        dist = INF;
+        dist = INT_MAX;
         prev = nullptr;
         done = false;
     }
