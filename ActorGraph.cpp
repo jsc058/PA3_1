@@ -7,10 +7,9 @@
  * defined in movie_casts.tsv. Feel free to modify any/all aspects as you wish.
  */
 
-#include "ActorGraph.hpp"
-#include "MovieNode.hpp"
-#include "ActorNode.hpp"
+//#include "ActorGraph.hpp"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -18,16 +17,20 @@
 #include <algorithm>
 #include <utility>
 #include <unordered_map>
+#include <bits/stdc++.h>
+# define INF 0x3f3f3f3f
 
 using namespace std;
 
 
+class myComparator {
 
-// Vector of actors paired with an array of pointers to their movies
-//vector<pair<string,ActorNode>> actors;
+        int operator()(const pair<int,ActorNode*> &a,
+                      const pair<int,ActorNode*> &b) {
+                return a.first < b.first;
+        }
+}
 
-// Vector of movies
-//vector<pair<string,MovieNode>> movies;
 
 ActorGraph::ActorGraph(const string in_filename, const char * type) {
         bool use_weighted_edges;
@@ -44,10 +47,6 @@ ActorGraph::ActorGraph(const string in_filename, const char * type) {
 bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) {
     // Initialize the file stream
     ifstream infile(in_filename);
-
-    // Node to insert into the vectors
-    ActorNode * actor;
-    MovieNode * movie;
 
     bool have_header = false;
 
@@ -89,32 +88,28 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
 
         // Check if the actor already exist
         auto it1 = actors.find(actor_name);
-        //auto itA = find(actors.begin(), actors.end(), actor_name)
 
         // Check if the movie exists
         auto it2 = movies.find(movie_title);
 
-
         // If the actor and movie hasn't exist yet, insert into hash map
         if (it1 == actors.end() && it2 == movies.end()) {
-                actors.insert({actor_name, new ActorNode(&actor_name)});
-                movies.insert({movie_title, new MovieNode(*movie_title)});
+                actors.insert({actor_name, ActorNode(&actor_name)});
+                movies.insert({movie_title, MovieNode(&movie_title, movie_year, use_weighted_edges)});
 
                 totalVertices++;
                 totalMovies++;
                 totalEdges++;
 
-                //actors.insert({actor_name, vector<string>()});
-
         // If only the actor hasn't existed yet
         } else if (it1 == actors.end()) {
-                actors.insert({actor_name, new ActorNode(&actor_name)});
+                actors.insert({actor_name, ActorNode(&actor_name)});
                 totalVertices++;
                 totalEdges++;
 
         // If only the movie hasn't existed yet
         } else if (it2 == movies.end()) {
-                movies.insert({movie_title, new MovieNode(&movie_title)});
+                movies.insert({movie_title, MovieNode(&movie_title, movie_year, use_weighted_edges)});
                 totalMovies++;
                 totalEdges++;
         }
@@ -132,4 +127,149 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
     infile.close();
 
     return true;
+}
+
+bool UnweightedPath(string actor1, string actor2, const string in_filename) {
+
+    queue<ActorNode*> toExplore;
+    ActorNode* start;
+
+
+    auto it1 = ag.actors.find(actor1);
+    auto it2 = ag.actors.find(actor2);
+
+    if (it1 == actors.end()) {
+        cout << "Failed to locate node " + actor1 << endl;
+        return false;
+    }
+
+    if (it2 == actors.end()) {
+        cout << "Failed to locate node " + actor2 << endl;
+        return false;
+    }
+
+    start = it1->second;
+    start->dist = 0;
+    toExplore.push(start);
+
+    while( !toExplore.empty() ) {
+        // Dequeue the front
+        ActorNode* next = toExplore.front();
+        toExplore.pop();
+
+        // explore all the neighbors starting with each movie
+        auto itV = next->movies_list.begin();
+        for (; itV != next->movies_list.end(); ++itV) {
+                // go to the actors of each movie list
+                auto itA = itV->actors_list.begin();
+                for (; itA != itV->actors_list.end(); ++itA) {
+                        ActorNode* neighbor = *itA;
+                        // once reach actor2, print path
+                        if (neightbor->actor_name == actor2) {
+                                ofstream myfile(*in_filename);
+                                if (myfile.is_open()) {
+                                        print_to_output(myfile, neighbor);
+                                        myfile << "-->(" + actor->actor_name + ").\n";
+                                } else {
+                                        cout << "Unable to open file" << endl;
+                                        return false;
+                                }
+                        }
+                        if (neighbor->prev == nullptr) {
+                                neighbor->dist = next->dist+1;
+                                neightbor->prev = next;
+                                neighbor->prevEdge = makepair(itV->movie_name,itv->movie_year);
+                                toExplore.push(neighbor);
+                        }
+                }
+
+        }
+    }
+
+    return false;
+}
+
+bool WeightedPath(string actor1, string actor2, const string in_filename) {
+
+    priority_queue<pair<int,ActorNode*>, vector<pair<int,ActorNode*>>, myComparator > toExplore;
+    ActorNode* start;
+
+
+    auto it1 = ag.actors.find(actor1);
+    auto it2 = ag.actors.find(actor2);
+
+    if (it1 == actors.end()) {
+        cout << "Failed to locate node " + actor1 << endl;
+        return false;
+    }
+
+    if (it2 == actors.end()) {
+        cout << "Failed to locate node " + actor2 << endl;
+        return false;
+    }
+
+    start = it1->second;
+    //start->dist = 0;
+    // vector of distances Initialize to 0
+    toExplore.push(make_pair(0,start));
+
+    while( !toExplore.empty() ) {
+        // Dequeue the front
+        pair<int,ActorNode*> next = toExplore.top();
+
+        toExplore.pop();
+
+        // Check if the vertex's min path hasn't been discovered
+        if (next.second->done == false) {
+                next.second->done == true;
+
+                // explore all the neighbors starting with each movie
+                auto itV = next.second->movies_list.begin();
+                for (; itV != next.second->movies_list.end(); ++itV) {
+                        // go to the actors of each movie list
+                        auto itA = itV->actors_list.begin();
+                        for (; itA != itV->actors_list.end(); ++itA) {
+                                ActorNode* neighbor = *itA;
+
+                                // find total distance from next to neighbor
+                                int distance = next.second.dist + itV->weight;
+
+                                // if a smaller weight path has been found, update
+                                if (distance < neighbor->dist) {
+                                        neighbor->prev = next;
+                                        neighbor->dist = distance;
+                                        toExplore.push(make_pair(distance,neighbor));
+                                }
+                        }
+
+                }
+        }
+    }
+
+    if (it2->dist != INF) {
+            ofstream myfile(*in_filename);
+            if (myfile.is_open()) {
+                    print_to_output(myfile, it2->second);
+                    myfile << "-->(" + it2->second.actor_name + ").\n";
+            } else {
+                    cout << "Unable to open file" << endl;
+                    return false;
+            }
+
+    } else {
+        return false;
+    }
+}
+
+void print_to_output(ofstream myfile, ActorNode* actor) {
+
+        if (prev == nullptr) {
+                myfile << "(" + actor->actor_name + ")";
+        }
+
+        print_to_output(actor->prev);
+
+        myfile << "--[" + actor->prevEdge.first + "#@" + actor->prevEdge.second + "]";
+
+
 }
