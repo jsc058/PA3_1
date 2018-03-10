@@ -19,16 +19,18 @@ int main(int argc, const char ** argv) {
 	// Make the graph with the movie cast list
 	const char * type = "u";
         ActorGraph ag(argv[1], type);
+        ActorGraph & graph = ag;
 	cout << "Done creating graph\n" << endl;
-	
-	// Make an adjacency matrix from the graph 
-	vector<vector<int>> adjMtx
+
+	// Make an adjacency matrix from the graph
+	AdjMtx adjMtx(graph);
+        adjMtx.print();
 	cout << "Done creating mtx\n" << endl;
 
-	// Initialize the file stream 
+	// Initialize the file stream
         ifstream infile(argv[2]);
         bool have_header = false;
-	
+
 	// Existing interaction file
         ofstream myfile1(argv[3]);
 	ofstream & myfile_ref1 = myfile1;
@@ -45,7 +47,7 @@ int main(int argc, const char ** argv) {
 
 	while (infile) {
 		string s;
-		
+
 		// get the next line
 		if (!getline( infile, s )) break;
 
@@ -75,10 +77,10 @@ int main(int argc, const char ** argv) {
 		string actors(record[0]);
 
 	}
-	
 
-	myfile1.close();	
-	myfile2.close();	
+
+	myfile1.close();
+	myfile2.close();
 
 	return 0;
 
