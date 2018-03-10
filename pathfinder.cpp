@@ -27,64 +27,72 @@ int run(int argc, const char ** argv) {
         }
 
         // Make the graph with the movie cast list
-        ActorGraph ag(argv[0], argv[1]);
-        cout << "# nodes: " + ag.totalVertices << endl;
-        cout << "# movies: " + ag.totalMovies << endl;
-        cout << "# edges:" + ag.totalEdges << endl;
+        ActorGraph ag(argv[1], argv[2]);
+	cout << ag.totalNodes << endl;
+	cout << ag.totalMovies << endl;
 
         // Initialize the file stream
         ifstream infile(argv[2]);
         bool have_header = false;
-        string s;
+        ofstream myfile(argv[4]);
+	ofstream & myfile_ref = myfile;
+	if (myfile.is_open()) {
+		myfile_ref << "(actor)--[movie#@year]-->(actor)--...\n";
+	}
+	while (infile) {
+		string s;
 
-        // get the next line
-        if (!getline( infile, s )) break;
+		// get the next line
+		if (!getline( infile, s )) break;
 
-        if (!have_header) {
-            // skip the header
-            have_header = true;
-            continue;
-        }
+                if (!have_header) {
+                    // skip the header
+                    have_header = true;
+                    continue;
+                }
 
-        istringstream ss( s );
-        vector <string> record;
+                istringstream ss( s );
+                vector <string> record;
 
-        while (ss) {
-            string next;
+                while (ss) {
+                    string next;
 
-            // get the next string before hitting a tab character and put it in 'next'
-            if (!getline( ss, next, '\t' )) break;
+                    // get the next string before hitting a tab character and put it in 'next'
+                    if (!getline( ss, next, '\t' )) break;
 
-            record.push_back( next );
-        }
+                    record.push_back( next );
+                }
 
-        if (record.size() != 2) {
-            // we should have exactly 2 columns
-            continue;
-        }
+                if (record.size() != 2) {
+                    // we should have exactly 2 columns
+                    continue;
+                }
 
-        string actor1(record[0]);
-        string actor2(record[1]);
-        bool success;
+                string actor1(record[0]);
+                string actor2(record[1]);
+                bool success;
 
-        if (**(argv[1]) == 'u') {
-                success = ag.UnweightedPath(actor1, actor2, argv[3]);
+		if (strcmp(argv[2],"u") == 0) {
+			success = ag.UnweightedPath(actor1, actor2, myfile_ref);
 
-        } else {
-                success = ag.WeightedPath(actor1, actor2, argv[3]);
+		} else {
+			success = ag.WeightedPath(actor1, actor2, myfile_ref);
+			cout << actor1 + actor2 << endl;
 
-        }
+                }
 
-        if (success == false) {
-                exit(-1);
-        }
+		auto it = ag.actors.begin();
+		for(; it != ag.actors.end(); ++it ) {
+			it->second.dist = INT_MAX;
+			it->second.prev = nullptr;
+			it->second.done = false;
+		}
+	}
 
-        auto it = ag.actors.begin();
-        for(; it != ag.actors.end(); ++it ) {
-                it->ActorNode.dist = INT_MAX;
-                it->prev = nullptr;
-                it->done = false;
-        }
+
+	myfile.close();
+	return 0;
+
 
 
 }
