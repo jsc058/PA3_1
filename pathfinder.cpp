@@ -28,8 +28,8 @@ int run(int argc, const char ** argv) {
 
         // Make the graph with the movie cast list
         ActorGraph ag(argv[1], argv[2]);
-	cout << ag.totalNodes << endl;
-	cout << ag.totalMovies << endl;
+	//ActorGraph * ag = &agraph;
+	cout << "Done creating graph" << endl;
 
         // Initialize the file stream
         ifstream infile(argv[2]);

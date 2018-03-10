@@ -296,8 +296,6 @@ public:
 	    }
 	    if (it2->second.dist != INT_MAX) {
 		    print_to_output(it2->second.prev, path);
-		    //myfile << "[" + it2->second.prevEdge.first + "#@" + to_string(it2->second.prevEdge.second) + "]";
-		    //myfile << "-->(" + it2->second.actor_name + ")\n";
 		    path += "[" + it2->second.prevEdge.first + "#@" + to_string(it2->second.prevEdge.second) + "]";
 		    path += "-->(" + it2->second.actor_name + ")\n";
 		    myfile << path;
@@ -306,22 +304,6 @@ public:
 		return false;
 	    }
 	}
-/*
-	void print_to_output(ActorNode* actor, ofstream& myfile) {
-
-		if (actor->prev == nullptr) {
-			myfile << "(" + actor->actor_name + ")--";
-		} else {
-
-			print_to_output(actor->prev, myfile);
-
-			myfile << "[" + actor->prevEdge.first + "#@" + to_string(actor->prevEdge.second) + "]-->";
-			myfile << "(" + actor->actor_name + ")--"; 
-		}
-
-
-	}
-*/
 	void print_to_output(ActorNode* actor, string & myfile) {
 
 		if (actor->prev == nullptr) {
