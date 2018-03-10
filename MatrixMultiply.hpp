@@ -10,10 +10,12 @@ class MatrixOperations {
 public:
   vector<vector<T>> matrixA;
   vector<vector<T>> matrixB;
+
   MatrixOperations(const vector<vector<T>> &a, const vector<vector<T>> &b)  {
    matrixA = a;
    matrixB = b;
   }
+
   vector<vector<T>> matrixMultiply()
   {
     const int dim1 = matrixA.size();     // a rows

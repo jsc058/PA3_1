@@ -7,11 +7,11 @@ LDFLAGS=
 # if passed "type=opt" at command-line, compile with "-O3" flag (otherwise use "-g" for debugging)
 
 ifeq ($(type),opt)
-    CPPFLAGS += -g
-    LDFLAGS += -g
-else
     CPPFLAGS += -O3
     LDFLAGS += -O3
+else
+    CPPFLAGS += -g
+    LDFLAGS += -g
 endif
 
 all: pathfinder linkpredictor awardsceremony
@@ -24,7 +24,13 @@ pathfinder: pathfinder.o ActorGraph.o
 	$(CC) $(LDFLAGS) $(CXXFLAGS) -o pathfinder pathfinder.o ActorGraph.hpp
 
 pathfinder.o: pathfinder.cpp 
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c pathfinder.cpp 
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c pathfinder.cpp
+ 
+linkpredictor: linkpredictor.o ActorGraph.o AdjMtx.o
+	$(CC) $(LDFLAGS) $(CXXFLAGS) -o linkpredictor linkpredictor.o ActorGraph.hpp AdjMtx.hpp
+
+linkpredictor.o: linkpredictor.cpp 
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c linkpredictor.cpp 
 
 
 
@@ -34,6 +40,9 @@ pathfinder.o: pathfinder.cpp
 
 ActorGraph.o: ActorGraph.hpp ActorNode.hpp MovieNode.hpp
 	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c ActorGraph.hpp ActorNode.hpp MovieNode.hpp
+
+AdjMtx.o: AdjMtx.hpp MatrixMultiply.hpp
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -c AdjMtx.hpp MatrixMultiply.hpp
 
 clean:
 	rm -f pathfinder *.o *.gch core*
