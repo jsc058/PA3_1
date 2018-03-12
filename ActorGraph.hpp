@@ -176,6 +176,7 @@ public:
 	}
 
 	bool UnweightedPath(string actor1, string actor2, ofstream& myfile) {
+            cout << "Here" << endl;
 	    queue<ActorNode*> toExplore;
 	    ActorNode* start;
             string path_obj = "";
@@ -318,6 +319,77 @@ public:
 
 
 	}
+
+	int findDegree(ActorNode* actor) {
+	  int degree = 0;
+
+	  // Loop through every movie to go to connecting actors to count degree
+	  for (int i = 0; i < actor->movies_list.size(); i++) {
+	    for (int j = 0; j < actor->movies_list[i]->actors_list.size(); j++) {
+	      if (actor->movies_list[i]->actors_list[j]->actor_name == actor->actor_name) {
+		continue;
+	      }
+	      
+              degree++;
+	     }
+          }
+
+          return degree;
+	}
+
+	graphDecomposition(int k) {
+	  ActorNode* node;
+	  int degree;
+	  vector<pair<string,int>> nodesDegrees(totalNodes);
+	  vector<ActorNode*> notInvited;
+	  vector<ActorNode*> invited;
+
+	  // Loop through all the actor nodes and find their degrees
+	  auto it = actors.begin();
+	  for (; it != actors.end(); ++it) {
+	    node = &(it->second);
+	    degree = findDegree(node);
+	    nodesDegree.push_back(make_pair(node->actor_name, degree));
+	    if (degree < k) {
+	      notInvited.push_back(node);
+            } else {
+	      invited.push_back(node);
+	    }
+	  }
+	  
+	  //vector<ActorNode*> & notInvited_ref = notInvited;
+	  //vector<ActorNode*> & invited_ref = invited;
+	  // Perform DFS on all the uninvited nodes
+	  int index = 0;
+	  while (!notInvited.empty()) {
+            DFS(index, notInvited, invited, k);
+	    index++;
+	  }
+/*
+	    // If the degree of the node is less than k, delete node
+	    if (degree < k) {
+	      auto itM = actors.second->movies_list.begin();
+	      for (; itM != actors.second->movies_list.end(); ++itM) {
+	        auto itA = (*itM)->actors_list.begin();
+		for (; itA != (*itV)->actors_list.end(); ++itA) {
+                }
+	      }
+
+	    }
+*/
+
+	  }
+
+	  bool DFS(int index, vector<ActorNode*> &notInvited, vector<ActorNode*> &invited, int k) {
+	    ActorNode * currentNode = notInvited[index];
+
+	    // Iterate through all the neighbors
+
+	  }
+
+	    
+	}
+	
 };
 
 
