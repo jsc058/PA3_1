@@ -18,9 +18,7 @@
 
 using namespace std;
 
-
-
-int run(int argc, const char ** argv) {
+int main(int argc, const char ** argv) {
         if (argc < 4) {
                 cout << "Incorrect number of arguments." << endl;
                 exit(-1);
@@ -30,18 +28,22 @@ int run(int argc, const char ** argv) {
         ActorGraph ag (argv[1], argv[2]);
 	cout << ag.totalNodes << endl;
 	cout << ag.totalMovies << endl;
+	cout << "Done making graph" << endl;
 
         // Initialize the file stream
-        ifstream infile(argv[2]);
+        ifstream infile(argv[3]);
         bool have_header = false;
+        
         ofstream myfile(argv[4]);
 	ofstream & myfile_ref = myfile;
 	if (myfile.is_open()) {
 		myfile_ref << "(actor)--[movie#@year]-->(actor)--...\n";
 	}
-	while (infile) {
-		string s;
 
+	while (infile) {
+		cout << "Enter infile" << endl;
+		string s;
+		
 		// get the next line
 		if (!getline( infile, s )) break;
 
@@ -74,6 +76,7 @@ int run(int argc, const char ** argv) {
 
 		if (strcmp(argv[2],"u") == 0) {
 			success = ag.UnweightedPath(actor1, actor2, myfile_ref);
+			cout << actor1 + actor2 << endl;
 
 		} else {
 			success = ag.WeightedPath(actor1, actor2, myfile_ref);
@@ -92,7 +95,5 @@ int run(int argc, const char ** argv) {
 
 	myfile.close();
 	return 0;
-
-
 
 }

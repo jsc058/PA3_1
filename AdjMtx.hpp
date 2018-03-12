@@ -1,7 +1,7 @@
 #ifndef ADJMATX
 #define ADJMATX
 
-#include <csstdlib>
+#include <cstdlib>
 #include "MatrixMultiply.hpp"
 #include "ActorGraph.hpp"
 
@@ -14,29 +14,31 @@ public:
 
    int sizeMtx;	// size of matrix
    unordered_map<string, int> actorsList;	//unorered map to map actors to index #
-   <vector<vector<int>> matrix;
+   vector<vector<int>> matrix;
 
   // Constructor
   AdjMtx(ActorGraph & graph) {
     sizeMtx = graph.actors.size();
     int index = 0;
+    string * name;
+
 
     // Initialize matrix to all values of 0
-    <vector<vector<int>> matrix(sizeMtx, vector<int>(sizeMtx, 0));
-    auto it = graph.begin();
+    vector<vector<int>> matrix(sizeMtx, vector<int>(sizeMtx, 0));
+    auto it = graph.actors.begin();
     for (; it != graph.actors.end(); ++it) {
       actorsList.insert({it->first, index});
       index++;
     }
 
     // Input corresponding values according to relations of the graph
-    auto itA = graph.actors.begin();
+    auto itA = graph.actors.begin();	// Iterator to the ActorGraph actors unordered map
     for (; itA != graph.actors.end(); ++itA) {
-       auto itV = (*itA)->movies_list.begin();
-       for (; itV != (*itA)->movies_list.end(); ++itV) {
-           auto itM = (*itV)->actors_list.begin();
-           for (; itM != (*itV)->actors_list.end()) {
-             matrix[actorsList.find(itA->actor_name)][actorsList.find((*itM)->actor_name)] = 1;
+       auto itV = (*itA).second.movies_list.begin();	// Iterator through the movies of each actor
+       for (; itV != (*itA).second.movies_list.end(); ++itV) {
+           auto itM = (*itV)->actors_list.begin();	// Iterator through the actors of the movie
+           for (; itM != (*itV)->actors_list.end(); ++itM) {
+             matrix[actorsList.at((*itA).second.actor_name)][actorsList.at((*itM)->actor_name)] = 1;
            }
        }
     }
