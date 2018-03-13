@@ -21,7 +21,7 @@ int main(int argc, const char ** argv) {
 	cout << "Done creating graph\n" << endl;
 
 	// Call graph decomposition to come up with the invite list
-	ag.graphDecomposition(argv[2]);
+	string invited = ag.graphDecomposition(argv[2]);
 
 	// Output file
         ofstream myfile1(argv[3]);
@@ -29,6 +29,8 @@ int main(int argc, const char ** argv) {
 	if (myfile1.is_open()) {
 		myfile_ref1 << "Actor\n";
 	}
+
+        myfile_ref1 << invited;
 
 	// Tester for functions; Delete later
 	/*
@@ -46,4 +48,3 @@ int main(int argc, const char ** argv) {
 	return 0;
 
 };
-

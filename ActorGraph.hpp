@@ -158,7 +158,7 @@ public:
 			it2 = movies.find(movie_title + record[2]);
 			totalMovies++;
 
-		} 
+		}
 
 		it1->second.movies_list.push_back(&(it2->second));
 		it2->second.actors_list.push_back(&(it1->second));
@@ -314,7 +314,7 @@ public:
 			print_to_output(actor->prev, myfile);
 
 			myfile += "[" + actor->prevEdge.first + "#@" + to_string(actor->prevEdge.second) + "]-->";
-			myfile += "(" + actor->actor_name + ")--"; 
+			myfile += "(" + actor->actor_name + ")--";
 		}
 
 
@@ -329,7 +329,7 @@ public:
 	      if (actor->movies_list[i]->actors_list[j]->actor_name == actor->actor_name) {
 		continue;
 	      }
-	      
+
               degree++;
 	     }
           }
@@ -337,33 +337,48 @@ public:
           return degree;
 	}
 
-	graphDecomposition(int k) {
+	string graphDecomposition(int k) {
 	  ActorNode* node;
+          ActorNode* currentNode;
 	  int degree;
-	  vector<pair<string,int>> nodesDegrees(totalNodes);
-	  vector<ActorNode*> notInvited;
-	  vector<ActorNode*> invited;
+          string invited = "";
+	  //vector<pair<string,int>> nodesDegrees(totalNodes);
+          unordered_map<string,int> nodesDegrees(totalNodes);
+          queue<ActorNode*> notInvited;
+	  //vector<ActorNode*> notInvited;
+	  //vector<ActorNode*> invited;
+          //unordered_map<string, ActorNode*> invited;
 
 	  // Loop through all the actor nodes and find their degrees
 	  auto it = actors.begin();
 	  for (; it != actors.end(); ++it) {
 	    node = &(it->second);
 	    degree = findDegree(node);
-	    nodesDegree.push_back(make_pair(node->actor_name, degree));
+	    //nodesDegree.push_back(make_pair(node->actor_name, degree));
+            nodesDegree.insert({node->actor_name, degree});
 	    if (degree < k) {
-	      notInvited.push_back(node);
+	      notInvited.push(node);
             } else {
-	      invited.push_back(node);
+	      //invited.push_back(node);
+              invited.insert({node->actor_name, node});
 	    }
 	  }
-	  
+
 	  //vector<ActorNode*> & notInvited_ref = notInvited;
 	  //vector<ActorNode*> & invited_ref = invited;
 	  // Perform DFS on all the uninvited nodes
-	  int index = 0;
+          //ActorNode* currentNode = notInvited.front();
+          //notInvited.pop();
 	  while (!notInvited.empty()) {
-            DFS(index, notInvited, invited, k);
-	    index++;
+            currentNode = notInvited.front();
+            notInvited.pop();
+
+            // Check if the popped queue is still in nodesDegree
+            if (nodesDegree.find(currentNode->actor_name) != nodesDegree.end()) {
+              DFS(currentNode, nodesDegree, k);
+            }
+
+	    //index++;
 	  }
 /*
 	    // If the degree of the node is less than k, delete node
@@ -377,19 +392,48 @@ public:
 
 	    }
 */
+          // Loop to append string of invited actors
+          auto i = nodesDegree.begin();
+          for (; i != nodesDegree.end(); ++i) {
+            string += nodesDegree.first + "\n";
+          }
 
-	  }
+          return string;
 
-	  bool DFS(int index, vector<ActorNode*> &notInvited, vector<ActorNode*> &invited, int k) {
-	    ActorNode * currentNode = notInvited[index];
-
-	    // Iterate through all the neighbors
-
-	  }
-
-	    
 	}
-	
+
+	void DFS(ActorNode* currentNode, unordered_map<string,int> &nodesDegrees, int k) {
+          //ActorNode * currentNode = notInvited[index];
+          int deg = 0;
+          // Erase the current from the nodesDegree
+          if (nodesDegree.find(currentNode->actor_name) == nodesDegree.end()) {
+            return;
+          }
+          nodesDegree.erase(currentNode->actor_name);
+
+	  // Iterate through all the neighbors and update nodesDegree
+          auto itM = currentNode->movies_list.begin();
+          for (; itM != currentNode->movies_list.end(); ++itM) {
+            auto itA = (*itM)->actors_list.begin();
+            for (; itA != (*itM)->actors_list.end(); ++itA) {
+              // Delete the current node from actors list
+              if ((*itA)->actor_name) == currentNode->actor_name) {
+                (*itM)->actors_list.erase(itA);
+                continue;
+              }
+              // Decrement the degree of neighbor node and call DFS if it's less than k
+              // Then delete actor node pointer from the movie list
+              nodesDegree.at((*itA)->actor_name)--;
+              if (nodesDegree.at((*itA)->actor_name) < k) {
+                (*itM)->actors_list.erase(itA);
+                DFS((*itA), &nodesDegrees, &notInvited, &invited, int k);
+               }
+
+             }
+          }
+
+	}
+
 };
 
 
