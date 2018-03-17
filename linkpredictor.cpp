@@ -8,7 +8,8 @@
 #include <limits.h>
 
 using namespace std;
-	vector<string> actorsName;
+
+vector<string> actorsName;
 // Function to sort by name if same product value
 bool sortbyname(const pair<int,int> &a, const pair<int, int> &b) {
   if (a.second > b.second) {
@@ -39,7 +40,6 @@ int main(int argc, const char ** argv) {
 	int index = 0;	// Index for the actors in the matrix
 	unordered_map<string, int> actorsList;
 	vector<vector<int>> matrix(sizeMtx, vector<int>(sizeMtx,0));
-//	vector<string> actorsName(sizeMtx);
 	auto it = graph.actors.begin();
         for (; it != graph.actors.end(); ++it) {
 	  actorsName.push_back(it->first);
@@ -110,8 +110,6 @@ int main(int argc, const char ** argv) {
 		    continue;
 		}
 
-		//string actors(record[0]);
-
 	}
 
 	// Make matrix of actors from file
@@ -129,21 +127,7 @@ int main(int argc, const char ** argv) {
 	vector<vector<pair<int,int>>> prodMtx;
 	MatrixOperations<int> mtx(actorMtx, matrix);
 	prodMtx = mtx.matrixMultiply();
-	// Print Matrix to check
-	/*
-	for (int i = 0; i < record.size(); i++) {
-		for (int j = 0; j < sizeMtx; j++) {
-			cout << prodMtx[i][j].second << " ";
-		}
-		cout<<endl;
-	}
-*/
-	// Make a vector of pairs to sort numerically and alphabetically
-	//vector<vector<pair<string, int>> products;
-	//vector<string> interactions;
-	//for (int idx2 = 0; idx2 < record.size(); idx2++) {
-	  //for (int j2 = 0; j2 < sizeMtx; j2++) {
-	    
+
 	// Sort each row of the matrix and write the top 4 interactions 
 	for (int idx2 = 0; idx2 < record.size(); idx2++) {
           sort (prodMtx[idx2].begin(), prodMtx[idx2].end(), sortbyname);
@@ -171,28 +155,7 @@ int main(int argc, const char ** argv) {
 	  myfile2 << collaborators[0]+ collaborators[1]+ collaborators[2]+ collaborators[3] + "\n";
 	  cout << "Computing predictions for " + record[idx2] << endl;
         }
-/*
-	// Find top 4 new collaborators 
-	for (int idx2 = 0; idx2 < record.size(); idx2++) {
-          //sort (prodMtx[idx2].begin(), prodMtx[idx2].end(), sortbyname);
-	  vector<string> interactions;	
-          for (int j2 = 0; j2 < sizeMtx; j2++) {
-	    if (actorMtx[idx2][prodMtx[idx2][j2].first] == 1 || 
-		actorsName[prodMtx[idx2][j2].first] == record[idx2]) {
-	      continue;
-            } else {
-               interactions.push_back(actorsName[prodMtx[idx2][j2].first] + "\t");
-	       if (interactions.size() == 4) {
-	         break;
-               }
-	     }
-          }
-  	  while (interactions.size() != 4) {
- 	    interactions.push_back("NULL\t");
-	  }
-	  myfile2 << interactions[0]+ interactions[1]+ interactions[2]+ interactions[3] + "\n";
-        }
-*/
+
 	myfile1.close();
 	myfile2.close();
 

@@ -20,7 +20,7 @@ class ActorNode {
     string actor_name;
     int dist;
     ActorNode* prev;
-    pair<string, int> prevEdge;
+    MovieNode* prevEdge;
     bool done;
 
     ActorNode(string * name) {

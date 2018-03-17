@@ -18,10 +18,14 @@ int main(int argc, const char ** argv) {
 	const char * type = "u";
         ActorGraph ag(argv[1], type);
         ActorGraph & graph = ag;
-	cout << "Done creating graph\n" << endl;
+	cout << "Done creating graph" << endl;
+	cout << ag.totalNodes << endl;
 
 	// Call graph decomposition to come up with the invite list
-	string invited = ag.graphDecomposition(argv[2]);
+	string k_str = string(argv[2]);
+	int k = stoi(k_str);
+	string invited = ag.graphDecomposition(k);
+	cout << "Succes in graph decomposition" << endl;
 
 	// Output file
         ofstream myfile1(argv[3]);
@@ -29,19 +33,8 @@ int main(int argc, const char ** argv) {
 	if (myfile1.is_open()) {
 		myfile_ref1 << "Actor\n";
 	}
-
+	
         myfile_ref1 << invited;
-
-	// Tester for functions; Delete later
-	/*
-	int degree = 0;
-	auto it = ag.actors.begin();
-	for (; it != ag.actors.end(); ++it) {
-	  ActorNode* node = &(it->second);
-	  degree = ag.findDegree(node);
-	  cout << node->actor_name + " " + to_string(degree) << endl;
-	}
-	*/
 
 	myfile1.close();
 

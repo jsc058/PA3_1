@@ -10,7 +10,6 @@
 #ifndef ACTORGRAPH_HPP
 #define ACTORGRAPH_HPP
 
-//#include "ActorGraph.cpp"
 #include "ActorNode.hpp"
 #include "MovieNode.hpp"
 #include <fstream>
@@ -22,6 +21,7 @@
 #include <algorithm>
 #include <utility>
 #include <unordered_map>
+#include <map>
 #include <bits/stdc++.h>
 #include <limits.h>
 
@@ -31,9 +31,8 @@ using namespace std;
 
 class myComparator {
 public:
-        int operator()(const pair<int,ActorNode*> &a,
-                      const pair<int,ActorNode*> &b) {
-                return a.first < b.first;
+        int operator()( ActorNode* a, ActorNode* b) {
+                return a->dist > b->dist;
         }
 };
 
@@ -91,9 +90,6 @@ public:
 	    // Initialize the file stream
 	    ifstream infile(in_filename);
 	    bool have_header = false;
-
-	   // unordered_map<string, ActorNode> * actors_ptr = ;
-	   // unordered_map<string, MovieNode> * movies_ptr;
 
 	    // keep reading lines until the end of file is reached
 	    while (infile) {
@@ -216,8 +212,6 @@ public:
 				if (neighbor->actor_name == actor2) {
 					//print_to_output(next, myfile);
 					print_to_output(next, path);
-					//myfile << "[" + (*itV)->movie_name + "#@" + to_string((*itV)->movie_year) + "]";
-					//myfile << "-->(" + neighbor->actor_name + ")\n";
 					path += "[" + (*itV)->movie_name + "#@" + to_string((*itV)->movie_year) + "]";
 					path += "-->(" + neighbor->actor_name + ")\n";
 					myfile << path;
@@ -226,7 +220,8 @@ public:
 				if (neighbor->dist == INT_MAX) {
 					neighbor->dist = next->dist+1;
 					neighbor->prev = next;
-					neighbor->prevEdge = make_pair((*itV)->movie_name,(*itV)->movie_year);
+					//neighbor->prevEdge = make_pair((*itV)->movie_name,(*itV)->movie_year);
+					neighbor->prevEdge = (*itV);
 					toExplore.push(neighbor);
 				}
 			}
@@ -238,10 +233,13 @@ public:
 	}
 
 	bool WeightedPath(string actor1, string actor2, ofstream& myfile) {
-	    priority_queue<pair<int,ActorNode*>, vector<pair<int,ActorNode*>>, myComparator> toExplore;
+	    priority_queue<ActorNode*, vector<ActorNode*>, myComparator> toExplore;
+	    ActorNode* next;
 	    ActorNode* start;
+	    ActorNode* neighbor;
             string path_obj = "";
 	    string & path = path_obj;
+	    unordered_map<string,int> visited_movies;
 
 	    auto it1 = actors.find(actor1);
 	    auto it2 = actors.find(actor2);
@@ -260,35 +258,46 @@ public:
 	    start->dist = 0;
 
 	    // vector of distances Initialize to 0
-	    toExplore.push(make_pair(0,start));
+	    toExplore.push(start);
 
 	    while( !toExplore.empty() ) {
 		// Dequeue the front
-		pair<int,ActorNode*> next = toExplore.top();
-
+		next = toExplore.top();
+		if (next->actor_name == actor2) {
+			break;
+		}
+		int dist = next->dist;
 		toExplore.pop();
 
 		// Check if the vertex's min path hasn't been discovered
-		if (next.second->done == false) {
-			next.second->done == true;
+		if (next->done == false) {
+			next->done == true;
 
 			// explore all the neighbors starting with each movie
-			auto itV = next.second->movies_list.begin();
-			for (; itV != next.second->movies_list.end(); ++itV) {
+			auto itV = next->movies_list.begin();
+			for (; itV != next->movies_list.end(); ++itV) {
+				if (visited_movies.find((*itV)->movie_name) != visited_movies.end()) {
+					continue;
+				}
+				visited_movies.insert({(*itV)->movie_name, 1});	
+				int weight = (*itV)->weight;
 				// go to the actors of each movie list
+				
 				auto itA = (*itV)->actors_list.begin();
 				for (; itA != (*itV)->actors_list.end(); ++itA) {
-					ActorNode* neighbor = *itA;
+					neighbor = (*itA);
+					if (neighbor->actor_name == next->actor_name) {
+					  continue;
+					}
 
 					// find total distance from next to neighbor
-					int distance = next.second->dist + (*itV)->weight;
-
+					int distance = dist + weight;
 					// if a smaller weight path has been found, update
 					if (distance < neighbor->dist) {
-						neighbor->prev = next.second;
+						neighbor->prev = next;
 						neighbor->dist = distance;
-						neighbor->prevEdge = make_pair((*itV)->movie_name,(*itV)->movie_year);
-						toExplore.push(make_pair(distance,neighbor));
+						neighbor->prevEdge = (*itV);
+						toExplore.push(neighbor);
 					}
 				}
 
@@ -297,7 +306,7 @@ public:
 	    }
 	    if (it2->second.dist != INT_MAX) {
 		    print_to_output(it2->second.prev, path);
-		    path += "[" + it2->second.prevEdge.first + "#@" + to_string(it2->second.prevEdge.second) + "]";
+		    path += "[" + it2->second.prevEdge->movie_name + "#@" + to_string(it2->second.prevEdge->movie_year) + "]";
 		    path += "-->(" + it2->second.actor_name + ")\n";
 		    myfile << path;
 		    return true;
@@ -313,7 +322,7 @@ public:
 
 			print_to_output(actor->prev, myfile);
 
-			myfile += "[" + actor->prevEdge.first + "#@" + to_string(actor->prevEdge.second) + "]-->";
+			myfile += "[" + actor->prevEdge->movie_name + "#@" + to_string(actor->prevEdge->movie_year) + "]-->";
 			myfile += "(" + actor->actor_name + ")--";
 		}
 
@@ -322,14 +331,19 @@ public:
 
 	int findDegree(ActorNode* actor) {
 	  int degree = 0;
+	  unordered_map<string, int> co_actors;
 
 	  // Loop through every movie to go to connecting actors to count degree
 	  for (int i = 0; i < actor->movies_list.size(); i++) {
 	    for (int j = 0; j < actor->movies_list[i]->actors_list.size(); j++) {
-	      if (actor->movies_list[i]->actors_list[j]->actor_name == actor->actor_name) {
-		continue;
+	      if (actor->movies_list[i]->actors_list[j] == nullptr) {
+	        continue;
+	      } else if (actor->movies_list[i]->actors_list[j]->actor_name == actor->actor_name) {
+		  continue;
+	      } else if (co_actors.find(actor->movies_list[i]->actors_list[j]->actor_name) != co_actors.end()) {
+		  continue;
 	      }
-
+	      co_actors.insert({actor->movies_list[i]->actors_list[j]->actor_name,1});
               degree++;
 	     }
           }
@@ -342,96 +356,97 @@ public:
           ActorNode* currentNode;
 	  int degree;
           string invited = "";
-	  //vector<pair<string,int>> nodesDegrees(totalNodes);
           unordered_map<string,int> nodesDegrees(totalNodes);
           queue<ActorNode*> notInvited;
-	  //vector<ActorNode*> notInvited;
-	  //vector<ActorNode*> invited;
-          //unordered_map<string, ActorNode*> invited;
+          unordered_map<string, ActorNode*> invite;
 
 	  // Loop through all the actor nodes and find their degrees
 	  auto it = actors.begin();
 	  for (; it != actors.end(); ++it) {
 	    node = &(it->second);
 	    degree = findDegree(node);
-	    //nodesDegree.push_back(make_pair(node->actor_name, degree));
-            nodesDegree.insert({node->actor_name, degree});
+            nodesDegrees.insert({node->actor_name, degree});
 	    if (degree < k) {
 	      notInvited.push(node);
-            } else {
-	      //invited.push_back(node);
-              invited.insert({node->actor_name, node});
+            }
+ 
+	    else {
+              invite.insert({node->actor_name, node});
 	    }
+
 	  }
 
-	  //vector<ActorNode*> & notInvited_ref = notInvited;
-	  //vector<ActorNode*> & invited_ref = invited;
+	  cout << "Done creating degrees graph" <<endl;
+
 	  // Perform DFS on all the uninvited nodes
-          //ActorNode* currentNode = notInvited.front();
-          //notInvited.pop();
 	  while (!notInvited.empty()) {
             currentNode = notInvited.front();
             notInvited.pop();
 
             // Check if the popped queue is still in nodesDegree
-            if (nodesDegree.find(currentNode->actor_name) != nodesDegree.end()) {
-              DFS(currentNode, nodesDegree, k);
+            if (nodesDegrees.find(currentNode->actor_name) != nodesDegrees.end()) {
+              DFS(currentNode, nodesDegrees, k);
             }
 
-	    //index++;
 	  }
-/*
-	    // If the degree of the node is less than k, delete node
-	    if (degree < k) {
-	      auto itM = actors.second->movies_list.begin();
-	      for (; itM != actors.second->movies_list.end(); ++itM) {
-	        auto itA = (*itM)->actors_list.begin();
-		for (; itA != (*itV)->actors_list.end(); ++itA) {
-                }
-	      }
 
+	  // Double check on all the nodes' degrees that are left in the map
+          auto iD = invite.begin();
+          for (; iD != invite.end(); ++iD) {
+	    degree = findDegree((iD->second));
+	    if (degree < k) {
+	      iD->second = nullptr;
 	    }
-*/
-          // Loop to append string of invited actors
-          auto i = nodesDegree.begin();
-          for (; i != nodesDegree.end(); ++i) {
-            string += nodesDegree.first + "\n";
           }
 
-          return string;
+          // Loop to append string of invited actors
+          auto i = invite.begin();
+          for (; i != invite.end(); ++i) {
+	    if (i->second == nullptr) {
+	      continue;
+	    }
+            invited += i->first + "\n";
+          }
+
+          return invited;
 
 	}
 
 	void DFS(ActorNode* currentNode, unordered_map<string,int> &nodesDegrees, int k) {
-          //ActorNode * currentNode = notInvited[index];
           int deg = 0;
+	  ActorNode * neighbor;
+
           // Erase the current from the nodesDegree
-          if (nodesDegree.find(currentNode->actor_name) == nodesDegree.end()) {
-            return;
-          }
-          nodesDegree.erase(currentNode->actor_name);
+          nodesDegrees.erase(currentNode->actor_name);
 
 	  // Iterate through all the neighbors and update nodesDegree
           auto itM = currentNode->movies_list.begin();
           for (; itM != currentNode->movies_list.end(); ++itM) {
             auto itA = (*itM)->actors_list.begin();
             for (; itA != (*itM)->actors_list.end(); ++itA) {
+	      if ((*itA) == nullptr) {
+	        continue;
+
               // Delete the current node from actors list
-              if ((*itA)->actor_name) == currentNode->actor_name) {
-                (*itM)->actors_list.erase(itA);
-                continue;
-              }
-              // Decrement the degree of neighbor node and call DFS if it's less than k
-              // Then delete actor node pointer from the movie list
-              nodesDegree.at((*itA)->actor_name)--;
-              if (nodesDegree.at((*itA)->actor_name) < k) {
-                (*itM)->actors_list.erase(itA);
-                DFS((*itA), &nodesDegrees, &notInvited, &invited, int k);
-               }
+	      } else if ((*itA)->actor_name == currentNode->actor_name) {
+                (*itA) = nullptr;
 
-             }
+              } else {
+                // Decrement the degree of neighbor node and call DFS if it's less than k
+                // Then delete actor node pointer from the movie list
+                auto it = nodesDegrees.find((*itA)->actor_name);
+	        if (it == nodesDegrees.end()) {
+		  continue;
+		} 
+		it->second--;
+                if (it->second < k) {
+                  neighbor = (*itA);
+                  (*itA) = nullptr;
+                  DFS(neighbor, nodesDegrees, k);
+                }
+	      }
+            }
           }
-
 	}
 
 };

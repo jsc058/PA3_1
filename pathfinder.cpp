@@ -19,7 +19,7 @@
 using namespace std;
 
 int main(int argc, const char ** argv) {
-        if (argc < 4) {
+        if (argc < 5) {
                 cout << "Incorrect number of arguments." << endl;
                 exit(-1);
         }
@@ -41,7 +41,6 @@ int main(int argc, const char ** argv) {
 	}
 
 	while (infile) {
-		cout << "Enter infile" << endl;
 		string s;
 		
 		// get the next line
